@@ -32,15 +32,33 @@ def set_vol(val):
     mixer.music.set_volume(volume) # <-- This function takes float value from 0 to 1
     print("Volume set to: ", val)
 
-
+#========
 # MAIN
-#============
+#========
 root = Tk()
+
+# Top Menubar
+menubar = Menu(root)
+root.config(menu=menubar)
+
+# Top Menubar Submenus
+
+# File Heading
+sub_menu = Menu(menubar, tearoff=0)
+menubar.add_cascade(label="File", menu=sub_menu)
+sub_menu.add_command(label="Open")
+sub_menu.add_command(label="Exit")
+
+# Help Heading
+sub_menu = Menu(menubar, tearoff=0)
+menubar.add_cascade(label="Help", menu=sub_menu)
+sub_menu.add_command(label="About")
 
 
 # Initialize Pygame Mixer class for audio playback
 mixer.init()
 
+# Basic window
 root.geometry('600x400')
 root.title("Diapason")
 root.iconbitmap(r'assets/diapason.ico')
@@ -64,7 +82,8 @@ btnStop.pack()
 
 # Volume Scale
 scale = Scale(root,from_=0, to=100, orient=HORIZONTAL, command=set_vol)
-scale.set(70) # Set default volume
+scale.set(70) 
+mixer.music.set_volume(70) # Set default volume
 scale.pack()
 
 root.mainloop()
