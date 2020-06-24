@@ -12,16 +12,32 @@
 #========
 
 from tkinter import *
+import tkinter.messagebox
+from tkinter import filedialog
 from pygame import mixer
+
 
 #=============
 # FUNCTIONS
 # ===========
 
+def about_us():
+    tkinter.messagebox.showinfo('About Diapasaon', '''        A joyfully polyphonous yet reverent music player 
+        Built using Python and Tkinter
+        © bearheathen 2020''')
+
+def browse_file():
+    global filename
+
+    filename = filedialog.askopenfilename()
+
 def play_music():
-    mixer.music.load("assets/chant.mp3")
-    mixer.music.play()
-    print('Playing.')
+    try:
+        mixer.music.load(filename)
+        mixer.music.play()
+        print('Playing.')
+    except:
+        tkinter.messagebox.showerror('Error Playing', 'Diapason could not find the file. Please try again.')
 
 def stop_music():
     mixer.music.stop()
@@ -46,13 +62,13 @@ root.config(menu=menubar)
 # File Heading
 sub_menu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="File", menu=sub_menu)
-sub_menu.add_command(label="Open")
-sub_menu.add_command(label="Exit")
+sub_menu.add_command(label="Open", command=browse_file)
+sub_menu.add_command(label="Exit", command=root.destroy)
 
 # Help Heading
 sub_menu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=sub_menu)
-sub_menu.add_command(label="About")
+sub_menu.add_command(label="About", command=about_us)
 
 
 # Initialize Pygame Mixer class for audio playback
@@ -83,7 +99,7 @@ btnStop.pack()
 # Volume Scale
 scale = Scale(root,from_=0, to=100, orient=HORIZONTAL, command=set_vol)
 scale.set(70) 
-mixer.music.set_volume(70) # Set default volume
+mixer.music.set_volume(0.7) # Set default volume
 scale.pack()
 
 root.mainloop()
