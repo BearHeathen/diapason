@@ -11,6 +11,7 @@
 # Imports
 #========
 
+import os
 from tkinter import *
 import tkinter.messagebox
 from tkinter import filedialog
@@ -35,12 +36,16 @@ def play_music():
     try:
         mixer.music.load(filename)
         mixer.music.play()
-        print('Playing.')
+        # Show name of playing media in statusbar
+        tmp = os.path.basename(filename)
+        nowplaying = os.path.splitext(tmp)[0]
+        statusbar['text'] = "Playing" + ' ' + nowplaying
     except:
         tkinter.messagebox.showerror('Error Playing', 'Diapason could not find the file. Please try again.')
 
 def stop_music():
     mixer.music.stop()
+    statusbar['text'] = "Stopped."
     print('Stopped.')
 
 def set_vol(val):
@@ -101,5 +106,9 @@ scale = Scale(root,from_=0, to=100, orient=HORIZONTAL, command=set_vol)
 scale.set(70) 
 mixer.music.set_volume(0.7) # Set default volume
 scale.pack()
+
+# Status Bar
+statusbar = Label(root, text='Welcome to Diapason', anchor=W, relief=SUNKEN)
+statusbar.pack(side=BOTTOM, fill=X)
 
 root.mainloop()
