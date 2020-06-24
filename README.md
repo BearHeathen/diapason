@@ -1,5 +1,5 @@
 # diapason
-Windows music player
+Windows music player built with Python 3.8.3 and Tkinter! 
 
 ## diapason (noun)
     di·​a·​pa·​son | \ ˌdī-ə-ˈpā-zᵊn  , -sᵊn \
