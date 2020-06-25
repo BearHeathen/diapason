@@ -69,7 +69,16 @@ def set_vol(val):
 #========
 # MAIN
 #========
+
+# Window layout and setup
+# Layout setup
 root = Tk()
+middle_frame = Frame(root)
+middle_frame.pack(padx=10, pady=50)
+
+# Basic window
+root.title("Diapason")
+root.iconbitmap(r'assets/diapason.ico')
 
 # Top Menubar
 menubar = Menu(root)
@@ -88,46 +97,39 @@ sub_menu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=sub_menu)
 sub_menu.add_command(label="About", command=about_us)
 
-
 # Initialize Pygame Mixer class for audio playback
 mixer.init()
-
-# Basic window
-root.geometry('600x400')
-root.title("Diapason")
-root.iconbitmap(r'assets/diapason.ico')
 
 # Load images for Tkinter to use
 playImg = PhotoImage(file='assets/play.png')
 stopImg = PhotoImage(file='assets/stop.png')
 pauseImg = PhotoImage(file='assets/pause.png')
-
-
-# Main Screen background.
-bckgImg = PhotoImage(file='assets/monk1.png')
+global flat_red
+flat_red = '#C93C3E'
+# Main Screen label.
 text = Label(root, text = 'Make a joyful noise!')
-text.pack()
+text.pack(side=TOP)
 
 # Play Button
-btnPlay = Button(root, image = playImg, command=play_music)
-btnPlay.pack()
-
-# Stop Button
-btnStop = Button(root, image=stopImg, command=stop_music)
-btnStop.pack()
+btnPlay = Button(middle_frame, image = playImg, relief=FLAT, command=play_music)
+btnPlay.pack(side=LEFT, padx=10, pady=20)
 
 # Pause Button
-btnPause = Button(root, image=pauseImg, command=pause_music)
-btnPause.pack()
+btnPause = Button(middle_frame, image=pauseImg, relief=FLAT, command=pause_music)
+btnPause.pack(side=LEFT, padx=10, pady=20)
+
+# Stop Button
+btnStop = Button(middle_frame, image=stopImg, relief=FLAT,command=stop_music)
+btnStop.pack(side=LEFT, padx=10, pady=20)
 
 # Volume Scale
-scale = Scale(root,from_=0, to=100, orient=HORIZONTAL, command=set_vol)
+scale = Scale(root,from_=0, to=100, orient=HORIZONTAL, length=250, sliderlength=25, sliderrelief=FLAT, troughcolor=flat_red, command=set_vol)
 scale.set(70)
 mixer.music.set_volume(0.7) # Set default volume
-scale.pack()
+scale.pack(pady=15)
 
 # Status Bar
-statusbar = Label(root, text='Welcome to Diapason', anchor=W, relief=SUNKEN)
+statusbar = Label(root, text='Welcome to Diapason', anchor=W, bd=10, relief=FLAT)
 statusbar.pack(side=BOTTOM, fill=X)
 
 root.mainloop()
