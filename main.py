@@ -23,30 +23,43 @@ from pygame import mixer
 # ===========
 
 def about_us():
-    tkinter.messagebox.showinfo('About Diapasaon', '''        A joyfully polyphonous yet reverent music player 
+    tkinter.messagebox.showinfo('About Diapasaon', '''        A joyfully polyphonous yet reverent music player
         Built using Python and Tkinter
         © bearheathen 2020''')
 
 def browse_file():
     global filename
-
     filename = filedialog.askopenfilename()
 
 def play_music():
     try:
-        mixer.music.load(filename)
-        mixer.music.play()
-        # Show name of playing media in statusbar
+        is_paused # Check if the pause button has been pressed. If it has, skip to "else"
+    except NameError:
+        try:
+            mixer.music.load(filename)
+            mixer.music.play()
+            # Show name of playing media in statusbar
+            tmp = os.path.basename(filename)
+            nowplaying = os.path.splitext(tmp)[0]
+            statusbar['text'] = "Playing" + ' ' + nowplaying
+        except:
+            tkinter.messagebox.showerror('Error Playing', 'Diapason experienced an error. Please try again.')
+    else:
+        mixer.music.unpause()
         tmp = os.path.basename(filename)
         nowplaying = os.path.splitext(tmp)[0]
-        statusbar['text'] = "Playing" + ' ' + nowplaying
-    except:
-        tkinter.messagebox.showerror('Error Playing', 'Diapason could not find the file. Please try again.')
+        statusbar['text'] = "Resumed Playing" + ' ' + nowplaying
 
 def stop_music():
     mixer.music.stop()
     statusbar['text'] = "Stopped."
     print('Stopped.')
+
+def pause_music():
+    global is_paused
+    is_paused = True
+    mixer.music.pause()
+    statusbar['text'] = "Paused."
 
 def set_vol(val):
     volume = int(val) / 100
@@ -87,9 +100,11 @@ root.iconbitmap(r'assets/diapason.ico')
 # Load images for Tkinter to use
 playImg = PhotoImage(file='assets/play.png')
 stopImg = PhotoImage(file='assets/stop.png')
+pauseImg = PhotoImage(file='assets/pause.png')
+
 
 # Main Screen background.
-bckgImg = PhotoImage(file='assets/monk1.png') 
+bckgImg = PhotoImage(file='assets/monk1.png')
 text = Label(root, text = 'Make a joyful noise!')
 text.pack()
 
@@ -98,12 +113,16 @@ btnPlay = Button(root, image = playImg, command=play_music)
 btnPlay.pack()
 
 # Stop Button
-btnStop = Button(root, image=stopImg, comman=stop_music)
+btnStop = Button(root, image=stopImg, command=stop_music)
 btnStop.pack()
+
+# Pause Button
+btnPause = Button(root, image=pauseImg, command=pause_music)
+btnPause.pack()
 
 # Volume Scale
 scale = Scale(root,from_=0, to=100, orient=HORIZONTAL, command=set_vol)
-scale.set(70) 
+scale.set(70)
 mixer.music.set_volume(0.7) # Set default volume
 scale.pack()
 
