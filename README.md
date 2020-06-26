@@ -1,5 +1,5 @@
 # diapason
-Windows music player built with Python 3.8.3 and Tkinter! 
+Windows music player built with Python 3.8.3 and Tkinter! Supports WAV, OGG, MOD, XM, and MP3 (Thanks PyGame!).
 ![example](examplePic.png)
 ![example2](examplePic2.png)
 
