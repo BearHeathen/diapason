@@ -12,11 +12,14 @@
 #========
 
 import os
+import time
+import threading
 from tkinter import *
 import tkinter.messagebox
 from tkinter import filedialog
 from pygame import mixer
 from PIL import Image, ImageTk
+from mutagen.mp3 import MP3
 
 
 #=============
@@ -32,22 +35,58 @@ def browse_file():
     global filename
     filename = filedialog.askopenfilename()
 
+def show_details(name_of_file):
+
+    # Get the extension
+    file_data = os.path.splitext(filename)[1]
+    # Is it an mp3 or wav, ogg, etc?
+    if file_data == '.mp3':
+        audio = MP3(filename)
+        total_length = audio.info.length
+    else:
+        a = mixer.Sound(name_of_file)
+        total_length = a.get_length()
+
+    # divmod - takes mins, divides by 60 and stores remainder in secs
+    # total_length / 60, mod - total_length % 60
+    mins, secs = divmod(total_length, 60)
+    mins = round(mins)
+    secs = round(secs)
+    time_format = '{:02d}:{:02d}'.format(mins, secs)
+    lblLength['text'] = time_format  
+
+    t1 = threading.Thread(target=start_count, args=(total_length,))
+    t1.start()
+
+
+def start_count(length):
+    while(length):
+        mins, secs = divmod(length, 60)
+        mins = round(mins)
+        secs = round(secs)
+        time_format = '{:02d}:{:02d}'.format(mins, secs)
+        lblCurrent['text'] = time_format
+        time.sleep(1)
+        length -= 1
+
+is_paused = False
 def play_music():
-    try:
-        is_paused # Check if the pause button has been pressed. If it has, skip to "else"
-    except NameError:
+    global is_paused
+    if is_paused:
+        mixer.music.unpause()
+        nowplaying = strip_filename(filename)
+        statusbar['text'] = "Resumed Playing" + ' ' + nowplaying
+        is_paused = False
+    else:
         try:
             mixer.music.load(filename)
             mixer.music.play()
+            show_details(filename)
             # Show name of playing media in statusbar
             nowplaying = strip_filename(filename)
             statusbar['text'] = "Playing" + ' ' + nowplaying
         except:
             tkinter.messagebox.showerror('Error Playing', 'Diapason experienced an error. Please try again.')
-    else:
-        mixer.music.unpause()
-        nowplaying = strip_filename(filename)
-        statusbar['text'] = "Resumed Playing" + ' ' + nowplaying
 
 def stop_music():
     mixer.music.stop()
@@ -89,12 +128,13 @@ def mute_audio():
         set_vol(70)
         muted = False
         btnMute.configure(image=volumeImg)
+        scale.set(70)
 
     else: # mute music
         set_vol(0)
         btnMute.configure(image=mutedImg)
+        scale.set(0)
         muted = True
-
 
 #========
 # MAIN
@@ -126,6 +166,14 @@ sub_menu.add_command(label="Exit", command=root.destroy)
 sub_menu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="Help", menu=sub_menu)
 sub_menu.add_command(label="About", command=about_us)
+
+# Show media length
+lblLength = Label(root, text = "--:--")
+lblLength.pack()
+
+# Show current play time
+lblCurrent = Label(root, text="--:--")
+lblCurrent.pack()
 
 # Initialize Pygame Mixer class for audio playback
 mixer.init()
