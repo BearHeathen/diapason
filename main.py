@@ -12,21 +12,25 @@
 #========
 
 import os
-import time
 import threading
-from tkinter import *
+import time
 import tkinter.messagebox
-from tkinter import filedialog
-from pygame import mixer
-from PIL import Image, ImageTk
-from mutagen.mp3 import MP3
+from tkinter import *
+from tkinter import filedialog, ttk
 
+from mutagen.mp3 import MP3
+from PIL import Image, ImageTk
+from pygame import mixer
+from ttkthemes import themed_tk as tk
 
 #=============
 # FUNCTIONS
 # ===========
 
 # Utility functions
+global flat_red
+flat_red = '#C93C3E'
+
 def strip_filename(filename):
     tmp = os.path.basename(filename)
     nowplaying = os.path.splitext(tmp)[0]
@@ -151,7 +155,7 @@ def rewind_music():
     statusbar['text'] = "Restarted Playback of" + ' ' + nowplaying
 
 def set_vol(val):
-    volume = int(val) / 100
+    volume = float(val) / 100
     mixer.music.set_volume(volume) # <-- This function takes float value from 0 to 1
     print("Volume set to: ", val)
 
@@ -181,10 +185,12 @@ def on_close():
 
 # Window layout and setup
 # Layout setup
-root = Tk()
+root = tk.ThemedTk()
+root.get_themes()
+root.set_theme("equilux", themebg=True )
 
 # Status Bar
-statusbar = Label(root, text='Welcome to Diapason', anchor=W, bd=10, relief=FLAT)
+statusbar = ttk.Label(root, text='Welcome to Diapason', anchor=W, font="Helvetica 16 bold")
 statusbar.pack(side=BOTTOM, fill=X)
 
 # Basic window
@@ -192,97 +198,96 @@ root.title("Diapason")
 root.iconbitmap(r'assets/diapason.ico')
 
 # Left/Right Frames
-left_frame = Frame(root)
+left_frame = ttk.Frame(root)
 left_frame.pack(side=LEFT, padx=30)
 
-right_frame = Frame(root)
+right_frame = ttk.Frame(root)
 right_frame.pack()
 
 # Top Frame
-top_frame = Frame(right_frame)
+top_frame = ttk.Frame(right_frame)
 top_frame.pack(side=TOP)
 
 # Bottom Frame
-bottom_frame = Frame(right_frame)
+bottom_frame = ttk.Frame(right_frame)
 bottom_frame.pack(side=BOTTOM)
 
 # Middle Frame
-middle_frame = Frame(right_frame)
+middle_frame = ttk.Frame(right_frame)
 middle_frame.pack(padx=30, pady=30)
 
 # Top Menubar
-menubar = Menu(root)
+menubar = Menu(root, font="Helvetica 10")
 root.config(menu=menubar)
 
 # Top Menubar Submenus
 
 # File Heading
-sub_menu = Menu(menubar, tearoff=0)
-menubar.add_cascade(label="File", menu=sub_menu)
-sub_menu.add_command(label="Open", command=browse_file)
-sub_menu.add_command(label="Exit", command=root.destroy)
+sub_menu = Menu(menubar, tearoff=0, font="Helvetica 10")
+menubar.add_cascade(label="File", menu=sub_menu, font="Helvetica 10")
+sub_menu.add_command(label="Open", command=browse_file, font="Helvetica 10")
+sub_menu.add_command(label="Exit", command=root.destroy, font="Helvetica 10")
 
 # Help Heading
 sub_menu = Menu(menubar, tearoff=0)
-menubar.add_cascade(label="Help", menu=sub_menu)
-sub_menu.add_command(label="About", command=about_us)
+menubar.add_cascade(label="Help", menu=sub_menu, font="Helvetica 10")
+sub_menu.add_command(label="About", command=about_us, font="Helvetica 10")
 
 # Show media length
-lblLength = Label(top_frame, text = "Total Length: --:--")
+lblLength = ttk.Label(top_frame, text = "Total Length: --:--", font="Helvetica 10")
 lblLength.pack()
 
 # Show current play time
-lblCurrent = Label(top_frame, text="Current Time: --:--")
+lblCurrent = ttk.Label(top_frame, text="Current Time: --:--", font="Helvetica 10 bold")
 lblCurrent.pack()
 
 # Initialize Pygame Mixer class for audio playback
 mixer.init()
 
-global flat_red
-flat_red = '#C93C3E'
+
 
 # Playlist Listbox
-lboxPlaylist = Listbox(left_frame)
+lboxPlaylist = Listbox(left_frame, font="Helvetica 9 bold", bg=flat_red, relief=FLAT, fg="#f0f0f0")
 lboxPlaylist.pack()
 
 # Pause Button
 pauseImg = resize_btn_image('assets/pause.png', 50, 50)
-btnPause = Button(middle_frame, image=pauseImg, relief=FLAT, command=pause_music)
+btnPause = ttk.Button(middle_frame, image=pauseImg, command=pause_music)
 btnPause.grid(row=1, column=0)
 
 # Play Button
 playImg = PhotoImage(file='assets/play.png')
-btnPlay = Button(middle_frame, image = playImg, relief=FLAT, command=play_music)
+btnPlay = ttk.Button(middle_frame, image = playImg, command=play_music)
 btnPlay.grid(row=1, column=1)
 
 # Add Song Button
 addImg = resize_btn_image('assets/add.png', 32, 32)
-btnAdd = Button(left_frame, image=addImg, relief=FLAT, command=browse_file)
+btnAdd = ttk.Button(left_frame, image=addImg, command=browse_file)
 btnAdd.pack(side=LEFT)
 
 # Remove Song Button
 removeImg = resize_btn_image('assets/remove.png', 32, 32)
-btnRemove = Button(left_frame, image=removeImg, relief=FLAT, command=remove_item)
+btnRemove = ttk.Button(left_frame, image=removeImg, command=remove_item)
 btnRemove.pack(side=LEFT)
 
 # Stop Button
 stopImg = resize_btn_image('assets/stop.png', 50, 50)
-btnStop = Button(middle_frame, image=stopImg, relief=FLAT,command=stop_music)
+btnStop = ttk.Button(middle_frame, image=stopImg, command=stop_music)
 btnStop.grid(row=1, column=2)
 
 # Rewind Button
 rewindImg = resize_btn_image('assets/rewind.png', 35, 35)
-btnRewind = Button(bottom_frame, image=rewindImg, relief=FLAT,command=rewind_music)
+btnRewind = ttk.Button(bottom_frame, image=rewindImg, command=rewind_music)
 btnRewind.grid(row=0, column=0, pady=20)
 
 # Mute button
 volumeImg = resize_btn_image('assets/volume.png', 35, 35)
 mutedImg = resize_btn_image('assets/muteVolume.png', 35, 35)
-btnMute = Button(bottom_frame, image=volumeImg, relief=FLAT, command=mute_audio)
+btnMute = ttk.Button(bottom_frame, image=volumeImg, command=mute_audio)
 btnMute.grid(row=0, column=1)
 
 # Volume Scale
-scale = Scale(bottom_frame,from_=0, to=100, orient=HORIZONTAL, length=250, sliderlength=25, sliderrelief=FLAT, troughcolor=flat_red, command=set_vol)
+scale = ttk.Scale(bottom_frame,from_=0, to=100, orient=HORIZONTAL, length=250, command=set_vol)
 scale.set(70)
 mixer.music.set_volume(0.7) # Set default volume
 scale.grid(row=0, column=2, padx=15)
