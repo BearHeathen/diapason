@@ -195,7 +195,8 @@ statusbar.pack(side=BOTTOM, fill=X)
 
 # Basic window
 root.title("Diapason")
-root.iconbitmap(r'assets/diapason.ico')
+diaIcon = BitmapImage('diapason.ico')
+root.iconbitmap(diaIcon)
 
 # Left/Right Frames
 left_frame = ttk.Frame(root)
